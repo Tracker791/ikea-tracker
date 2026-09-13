@@ -3,145 +3,138 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IKEA pohištvo: SI · AT · HR</title>
-<meta name="description" content="En iskalnik za IKEA pohištvo, ki na vsakem izdelku pokaže ceno v Sloveniji, Avstriji in na Hrvaškem hkrati.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛋️</text></svg>">
+<title>Pohištvo: SI · AT · HR</title>
+<meta name="description" content="En iskalnik za IKEA pohištvo, ki na vsakem izdelku pokaže ceno v Sloveniji, Avstriji in na Hrvaškem hkrati. Ni uradna stran podjetja IKEA.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f6f3ec;
+    --bg:#ffffff;
     --surface:#ffffff;
-    --surface-2:#efe9db;
-    --text:#20261f;
-    --text-muted:#5c655a;
-    --border:#ddd4c0;
-    --accent:#2c5f66;
-    --accent-soft:#dfe9e6;
-    --accent-warm:#bf6a2e;
-    --accent-warm-soft:#f4e2cd;
-    --good:#3a7d44;
-    --good-soft:#e0eee1;
-    --bad:#a23b3b;
-    --bad-soft:#f5e1df;
-    --muted-row:#00000008;
-    --si:#3a5a9a; --at:#a23b3b; --hr:#c0392b;
-    --shadow: 0 1px 2px rgba(32,38,31,.06), 0 8px 24px -12px rgba(32,38,31,.18);
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#14181a; --surface:#1c211d; --surface-2:#242b25;
-      --text:#eae6db; --text-muted:#a3ab9d; --border:#39413a;
-      --accent:#7bb8ba; --accent-soft:#233330; --accent-warm:#e2a15f; --accent-warm-soft:#3a2c1c;
-      --good:#7fc98a; --good-soft:#1f3323; --bad:#e08b7d; --bad-soft:#3a2320;
-      --muted-row:#ffffff08;
-      --si:#8fa9dd; --at:#d98a8a; --hr:#e08b7d;
-      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
-    }
-  }
-  :root[data-theme="dark"]{
-    --bg:#14181a; --surface:#1c211d; --surface-2:#242b25;
-    --text:#eae6db; --text-muted:#a3ab9d; --border:#39413a;
-    --accent:#7bb8ba; --accent-soft:#233330; --accent-warm:#e2a15f; --accent-warm-soft:#3a2c1c;
-    --good:#7fc98a; --good-soft:#1f3323; --bad:#e08b7d; --bad-soft:#3a2320;
-    --muted-row:#ffffff08;
-    --si:#8fa9dd; --at:#d98a8a; --hr:#e08b7d;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    --chip:#f5f5f5;
+    --text:#111111;
+    --text-muted:#484848;
+    --border:#e5e5e5;
+    --border-strong:#dbdbdb;
+    --blue:#0058a3;
+    --blue-dark:#004f95;
+    --yellow:#ffdb00;
+    --good:#0a7d2c;
+    --good-soft:#e6f4ea;
+    --bad:#a3312a;
+    --bad-soft:#faeaea;
+    --topbar:#111111;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg); color:var(--text);
-    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    background:var(--bg); color:var(--text-muted);
+    font-family:'Noto Sans','Noto IKEA',Roboto,'Open Sans',system-ui,sans-serif;
     line-height:1.45;
+    font-size:14px;
   }
-  a{color:var(--accent);}
-  .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 80px; }
+  a{color:var(--blue); text-decoration:none;}
+  b,strong{color:var(--text);}
 
-  header.top{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
-  .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:600; }
-  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(28px,4vw,38px); margin:0; text-wrap:balance; letter-spacing:-.01em; }
-  .lede{ color:var(--text-muted); max-width:70ch; font-size:15px; }
-  .meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; }
-  .tag{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:3px 9px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); display:inline-flex; align-items:center; gap:5px; }
-  .tag b{ color:var(--text); font-weight:600; }
+  .topbar{ background:var(--topbar); color:#fff; font-size:12px; }
+  .topbar .in{ max-width:1180px; margin:0 auto; padding:9px 20px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .topbar .disclaimer{ opacity:.75; }
+  .topbar .flags{ font-family:'Noto Sans',sans-serif; font-weight:700; letter-spacing:.02em; opacity:.9; }
 
-  .toolbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:20px 0 18px; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 20px 80px; }
+
+  header.top{ display:flex; align-items:center; gap:16px; padding:20px 0; flex-wrap:wrap; }
+  .wordmark{ display:flex; align-items:center; gap:10px; }
+  .wordmark .tag-icon{
+    width:44px; height:44px; border-radius:10px; background:var(--blue);
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .wordmark h1{
+    font-size:20px; font-weight:900; margin:0; color:var(--text); letter-spacing:-.01em;
+  }
+  .wordmark .sub{ font-size:12px; color:var(--text-muted); font-weight:400; }
+  .lede{ color:var(--text-muted); max-width:62ch; font-size:14px; margin:0 0 18px; }
+
+  .toolbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
   .search-box{
-    flex:1 1 280px; display:flex; align-items:center; gap:8px;
-    background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:10px 12px;
+    flex:1 1 300px; display:flex; align-items:center; gap:10px;
+    background:var(--chip); border-radius:64px;
+    padding:12px 18px;
   }
   .search-box input{
-    border:none; outline:none; background:none; color:var(--text); font-size:14.5px; width:100%;
-    font-family:'IBM Plex Sans', sans-serif;
+    border:none; outline:none; background:none; color:var(--text); font-size:16px; width:100%;
+    font-family:'Noto Sans', sans-serif;
   }
-  .search-box svg{ flex:none; color:var(--text-muted); }
+  .search-box svg{ flex:none; color:var(--text); }
   select#sortSelect{
-    font-family:'IBM Plex Sans',sans-serif; font-size:13.5px; padding:9px 10px;
-    border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text);
+    font-family:'Noto Sans',sans-serif; font-size:13.5px; font-weight:700; padding:11px 14px;
+    border-radius:64px; border:1.6px solid var(--border-strong); background:#fff; color:var(--text);
   }
   label.only3{
-    display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--text-muted);
-    font-family:'IBM Plex Mono',monospace; white-space:nowrap;
+    display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--text);
+    font-weight:700; white-space:nowrap; background:var(--chip); border-radius:64px; padding:10px 16px;
   }
   .back-btn{
-    font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600;
-    padding:9px 14px; border-radius:10px; border:1px solid var(--border);
-    background:var(--surface); color:var(--text); cursor:pointer; display:none; align-items:center; gap:6px;
+    font-size:13.5px; font-weight:700;
+    padding:10px 18px; border-radius:64px; border:1.6px solid var(--border-strong);
+    background:#fff; color:var(--text); cursor:pointer; display:none; align-items:center; gap:6px;
   }
   .back-btn.show{ display:inline-flex; }
+  .back-btn:hover{ border-color:var(--blue); color:var(--blue); }
 
-  /* sklop cards */
-  #sklopGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+  /* sklop chips */
+  #sklopGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px; }
   .sklop-card{
-    background:var(--surface); border:1px solid var(--border); border-radius:14px;
-    padding:16px; cursor:pointer; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px;
+    background:#fff; border:1.6px solid var(--border); border-radius:8px;
+    padding:16px; cursor:pointer; display:flex; flex-direction:column; gap:6px;
     text-align:left;
   }
-  .sklop-card:hover{ border-color:var(--accent); }
-  .sklop-card .name{ font-family:'Fraunces',serif; font-weight:600; font-size:16.5px; }
-  .sklop-card .count{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--text-muted); }
+  .sklop-card:hover{ border-color:var(--blue); }
+  .sklop-card .name{ font-weight:700; font-size:15px; color:var(--text); }
+  .sklop-card .count{ font-size:12.5px; color:var(--text-muted); }
   .sklop-card .from{ font-size:12.5px; color:var(--text-muted); }
-  .sklop-card .from b{ color:var(--accent-warm); font-family:'IBM Plex Mono',monospace; }
+  .sklop-card .from b{ color:var(--text); }
 
   /* product grid */
-  #productGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
+  #productGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px 16px; }
   .p-card{
-    background:var(--surface); border:1px solid var(--border); border-radius:14px;
-    overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; color:var(--text);
+    background:#fff; border:1.6px solid var(--border); border-radius:8px;
+    overflow:hidden; display:flex; flex-direction:column; color:var(--text);
   }
-  .p-card .thumb{ aspect-ratio:1/1; background:var(--surface-2); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .p-card .thumb{ aspect-ratio:1/1; background:#f5f5f5; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .p-card .thumb img{ width:100%; height:100%; object-fit:contain; }
-  .p-card .body{ padding:12px 13px 13px; display:flex; flex-direction:column; gap:4px; }
-  .p-card .name{ font-weight:700; font-size:14px; }
-  .p-card .type{ font-size:12.5px; color:var(--text-muted); }
-  .p-card .measure{ font-size:11.5px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; margin-bottom:4px; }
+  .p-card .body{ padding:12px 13px 10px; display:flex; flex-direction:column; gap:3px; }
+  .p-card .name{ font-weight:700; font-size:14px; color:var(--text); }
+  .p-card .type{ font-size:13px; color:var(--text-muted); }
+  .p-card .measure{ font-size:12px; color:var(--text-muted); margin-bottom:2px; }
 
   .price-table{ display:flex; flex-direction:column; border-top:1px solid var(--border); }
   .price-row{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
-    padding:7px 13px; text-decoration:none; color:var(--text); font-size:13px;
+    padding:9px 13px; text-decoration:none; color:var(--text); font-size:13px;
+    border-bottom:1px solid var(--border);
   }
-  .price-row:nth-child(odd){ background:var(--muted-row); }
-  .price-row .cc{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px; }
-  .price-row .val{ font-family:'IBM Plex Mono',monospace; font-weight:600; display:flex; align-items:baseline; gap:6px; }
+  .price-row:last-child{ border-bottom:none; }
+  .price-row .cc{ font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:6px; }
+  .price-row .val{ font-weight:700; display:flex; align-items:baseline; gap:6px; font-size:15px; }
   .price-row .was{ font-size:11px; color:var(--text-muted); text-decoration:line-through; font-weight:400; }
-  .price-row.best .val{ color:var(--accent-warm); }
-  .price-row.best .cc{ color:var(--accent-warm); }
-  .price-row.missing{ color:var(--text-muted); opacity:.55; pointer-events:none; }
-  .price-row.missing .val{ font-family:'IBM Plex Sans',sans-serif; font-weight:400; font-size:12px; }
-  .badge-mini{ font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:.03em; padding:1px 5px; border-radius:100px; font-weight:600; }
+  .price-row.best{ background:var(--yellow); }
+  .price-row.best .cc{ color:#3d3000; }
+  .price-row.best .val{ color:#111; }
+  .price-row.missing{ color:var(--text-muted); pointer-events:none; }
+  .price-row.missing .val{ font-weight:400; font-size:12.5px; }
+  .badge-mini{ font-size:8.5px; letter-spacing:.03em; padding:1px 5px; border-radius:100px; font-weight:700; text-transform:uppercase; }
   .badge-mini.new{ background:var(--good-soft); color:var(--good); }
   .badge-mini.last{ background:var(--bad-soft); color:var(--bad); }
 
-  #loadMoreWrap{ display:flex; justify-content:center; margin-top:22px; }
+  #loadMoreWrap{ display:flex; justify-content:center; margin-top:26px; }
   #loadMoreBtn{
-    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13.5px;
-    padding:11px 22px; border-radius:100px; border:1px solid var(--border);
-    background:var(--surface); color:var(--text); cursor:pointer;
+    font-weight:700; font-size:14px;
+    padding:12px 26px; border-radius:64px; border:1.6px solid var(--border-strong);
+    background:#fff; color:var(--text); cursor:pointer;
   }
-  #loadMoreBtn:hover{ border-color:var(--accent); color:var(--accent); }
+  #loadMoreBtn:hover{ border-color:var(--blue); color:var(--blue); }
 
   .empty{ color:var(--text-muted); font-size:14px; padding:40px 0; text-align:center; }
 
@@ -157,24 +150,33 @@
 </style>
 </head>
 <body>
+
+<div class="topbar"><div class="in">
+  <span class="disclaimer">Neuradno orodje za primerjavo cen · ni povezano s podjetjem Inter IKEA Systems B.V.</span>
+  <span class="flags">🇸🇮 SI · 🇦🇹 AT · 🇭🇷 HR</span>
+</div></div>
+
 <div class="wrap">
 
   <header class="top">
-    <div class="eyebrow">Cenovna primerjava · IKEA pohištvo</div>
-    <h1>En izdelek, tri cene: SI · AT · HR</h1>
-    <p class="lede">Vsak izdelek se pojavi samo enkrat — poleg njega pa cena v Sloveniji, Avstriji in na Hrvaškem, kot jih uradne strani ikea.com kažejo prav zdaj. Najcenejša država je obarvana.</p>
-    <div class="meta">
-      <span class="tag" id="updatedTag">nalagam …</span>
-      <span class="tag">vse cene v EUR</span>
-      <span class="tag">ni uradna stran IKEA</span>
+    <div class="wordmark">
+      <div class="tag-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffdb00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24H4a1 1 0 0 0-1 1v5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l5.59-5.59a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5" fill="#ffdb00" stroke="none"/></svg>
+      </div>
+      <div>
+        <h1>Pohištvo SI·AT·HR</h1>
+        <div class="sub">Neuradna cenovna primerjava</div>
+      </div>
     </div>
   </header>
+
+  <p class="lede">Vsak izdelek se pojavi samo enkrat — poleg njega pa cena v Sloveniji, Avstriji in na Hrvaškem, kot jih uradne strani ikea.com kažejo prav zdaj. Najcenejša država je označena rumeno.</p>
 
   <div class="toolbar">
     <button class="back-btn" id="backBtn">← Vsi sklopi</button>
     <div class="search-box">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="searchInput" type="text" placeholder="Išči po imenu izdelka (npr. BILLY, MALM, KALLAX …)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" type="text" placeholder="Kaj iščeš? (npr. BILLY, MALM, KALLAX …)">
     </div>
     <select id="sortSelect">
       <option value="relevance">Privzeto</option>
@@ -192,7 +194,7 @@
   <div id="loadMoreWrap" style="display:none;"><button id="loadMoreBtn">Prikaži več</button></div>
 
   <footer>
-    <span>Vir: uradni iskalni API ikea.com (si/at/hr) · samodejna dnevna osvežitev.</span>
+    <span id="updatedTag">nalagam …</span>
     <span id="totalTag"></span>
   </footer>
 
@@ -249,12 +251,9 @@
     for(const [itemNo, byCc] of byItem){
       const pick = COUNTRY_ORDER.map(cc=>byCc[cc]).find(Boolean);
       const availableCcs = COUNTRY_ORDER.filter(cc=>byCc[cc]);
-      let cheapest = null;
-      for(const cc of availableCcs){
-        const pr = byCc[cc].price;
-        if(pr != null && (cheapest==null || pr < cheapest.price)) cheapest = { cc, price: pr };
-      }
       const prices = availableCcs.map(cc=>byCc[cc].price).filter(v=>v!=null);
+      const minPrice = prices.length ? Math.min(...prices) : null;
+      const bestCcs = minPrice==null ? [] : availableCcs.filter(cc => Math.abs(byCc[cc].price - minPrice) < 0.005);
       const spread = prices.length ? Math.max(...prices) - Math.min(...prices) : 0;
       merged.push({
         itemNo,
@@ -266,8 +265,8 @@
         businessLabel: pick.businessLabel || "Drugo pohištvo",
         byCc,
         availableCount: availableCcs.length,
-        cheapestCc: cheapest ? cheapest.cc : null,
-        minPrice: cheapest ? cheapest.price : null,
+        bestCcs,
+        minPrice,
         spread,
       });
     }
@@ -336,7 +335,7 @@
     if(!rec){
       return `<span class="price-row missing"><span class="cc">${FLAGS[cc]} ${CC_LABEL[cc]}</span><span class="val">ni na voljo</span></span>`;
     }
-    const isBest = p.cheapestCc === cc;
+    const isBest = p.bestCcs.includes(cc) && p.availableCount > 1;
     const badges = [];
     if(rec.status === "new") badges.push('<span class="badge-mini new">novo</span>');
     if(rec.lastChance) badges.push('<span class="badge-mini last">zadnji kosi</span>');
@@ -408,9 +407,9 @@
   searchInput.oninput = () => { visibleCount = PAGE; render(); };
 
   // init
-  updatedTag.innerHTML = fmtDate(RAW.generatedAt);
-  const perCountry = COUNTRY_ORDER.map(cc => `${FLAGS[cc]} <b>${(RAW.countries[cc]?.products.length||0).toLocaleString("sl-SI")}</b>`).join(" · ");
-  totalTag.innerHTML = MERGED.length.toLocaleString("sl-SI") + " edinstvenih izdelkov skupaj (" + perCountry + ")";
+  updatedTag.textContent = fmtDate(RAW.generatedAt);
+  const perCountry = COUNTRY_ORDER.map(cc => `${FLAGS[cc]} ${(RAW.countries[cc]?.products.length||0).toLocaleString("sl-SI")}`).join(" · ");
+  totalTag.textContent = MERGED.length.toLocaleString("sl-SI") + " edinstvenih izdelkov skupaj (" + perCountry + ")";
   render();
 })();
 </script>
