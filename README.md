@@ -19,3 +19,4 @@ python -m http.server 8765   # lokalni predogled na http://localhost:8765
 
 `.github/workflows/scrape.yml` vsak dan ob 4:00 UTC požene `scraper.py` in
 samodejno objavi (commit + push) posodobljene podatke.
+
