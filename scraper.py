@@ -1,19 +1,19 @@
 """
-IKEA pohištvo - scraper za primerjavo cen med Slovenijo, Avstrijo in Hrvaško.
+IKEA - scraper za primerjavo cen med Slovenijo, Avstrijo in Hrvaško.
 
-Uporablja javni iskalni API podjetja IKEA (sik.search.blue.cdtapps.com), ki ga
-uradna stran www.ikea.com/<cc>/<lc>/search/ v ozadju kliče za vsak iskalni niz.
-API je odprt (CORS: *), ne zahteva prijave in vrača strukturirane podatke o
-izdelku: ime, ceno, kategorijo (IKEA-ina lastna klasifikacija), oceno kupcev
-in povezavo do strani izdelka.
+Uporablja javni iskalni/kategorijski API podjetja IKEA
+(sik.search.blue.cdtapps.com), ki ga uradna stran www.ikea.com v ozadju
+kliče. API je odprt (CORS: *), ne zahteva prijave.
 
-Ker API omogoča samo iskanje po nizu (ni "prebrskaj po kategoriji"), pohištvo
-zajamemo tako, da vsako IKEA kategorijo pohištva predstavimo z eno ali dvema
-iskalnima frazama v jeziku posamezne države (glej CATEGORY_QUERIES). Rezultati
-se združijo in razdvojijo po "homeFurnishingBusinessName" - IKEA-inem internem
-imenu poslovnega področja, ki je (nenavadno koristno) enako ne glede na jezik
-strani, zato lahko izdelke iz vseh treh držav zanesljivo razvrstimo v enake
-sklope.
+Namesto iskanja po ključnih besedah (ki je jezikovno odvisno in nikoli ne
+zajame vsega) uporabimo endpoint "product-list-page?category=<koda>", ki
+vrne VSE izdelke ene IKEA kategorije naenkrat (do 1000 na klic - IKEA-in
+lastni maksimum). Kategorijske kode (npr. "st001", "fu004", "20649" ...) so
+enake ne glede na jezik/državo - pridobljene z ročnim pregledom celotnega
+menija "Izdelki" na ikea.com/si/sl/cat/izdelki-products/, zato scraper
+zajame praktično celoten IKEA katalog (pohištvo, kuhinja, tekstil,
+razsvetljava, dekoracija, vrt, rastline, elektronika, čiščenje, hišni
+ljubljenčki, hrana ...), ne le pohištvo.
 
 Zagon: python scraper.py
 Izhod: data/products.json (polni podatki), data.js (za index.html)
@@ -21,7 +21,6 @@ Izhod: data/products.json (polni podatki), data.js (za index.html)
 
 import json
 import time
-import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,9 +31,9 @@ DATA_DIR = BASE_DIR / "data"
 PRODUCTS_FILE = DATA_DIR / "products.json"
 DATA_JS_FILE = BASE_DIR / "data.js"
 
-API_BASE = "https://sik.search.blue.cdtapps.com/{cc}/{lc}/search-result-page"
-PAGE_SIZE = 100
-REQUEST_DELAY_SECONDS = 0.4
+API_BASE = "https://sik.search.blue.cdtapps.com/{cc}/{lc}/product-list-page"
+PAGE_SIZE = 1000  # IKEA-in maksimum na klic
+REQUEST_DELAY_SECONDS = 0.3
 
 HEADERS = {
     "User-Agent": (
@@ -50,115 +49,38 @@ COUNTRIES = {
     "hr": {"cc": "hr", "lc": "hr", "label": "IKEA Hrvaška", "domain": "https://www.ikea.com/hr/hr"},
 }
 
-# Sklopi pohištva: en logični sklop = ena ali več iskalnih fraz na državo.
-# "label" je prikazni naslov sklopa na strani (slovensko, saj je občinstvo SI).
-# Dejansko razvrščanje izdelkov v sklope na strani temelji na
-# businessStructure.homeFurnishingBusinessName iz odgovora API-ja (glej
-# BUSINESS_NAME_LABELS spodaj) - iskalne fraze tu služijo samo temu, da
-# izdelke sploh najdemo.
-CATEGORY_QUERIES = {
-    "sofas": {
-        "label": "Sedežne garniture in fotelji",
-        "si": ["sedežna garnitura", "fotelj", "trosed", "dvosed"],
-        "at": ["sofa", "sessel", "ecksofa"],
-        "hr": ["kauč", "fotelja", "trosjed", "dvosjed"],
-    },
-    "beds": {
-        "label": "Postelje in žimnice",
-        "si": ["posteljni okvir", "žimnica", "otroška postelja"],
-        "at": ["bettgestell", "matratze", "kinderbett"],
-        "hr": ["okvir kreveta", "madrac", "dječji krevet"],
-    },
-    "wardrobes": {
-        "label": "Garderobne omare in shranjevanje",
-        "si": ["garderobna omara", "drsna vrata omara"],
-        "at": ["kleiderschrank", "schiebetürenschrank"],
-        "hr": ["ormar za odjeću", "ormar s kliznim vratima"],
-    },
-    "drawers": {
-        "label": "Predalniki in komode",
-        "si": ["predalnik", "komoda", "nočna omarica"],
-        "at": ["kommode", "nachttisch"],
-        "hr": ["komoda", "noćni ormarić"],
-    },
-    "bookcases": {
-        "label": "Knjižne omare in regali",
-        "si": ["knjižna omara", "regal", "kockaste police"],
-        "at": ["bücherregal", "regal"],
-        "hr": ["biblioteka", "polica", "regal"],
-    },
-    "dining": {
-        "label": "Jedilne mize in stoli",
-        "si": ["jedilna miza", "jedilni stol", "barski stol"],
-        "at": ["esstisch", "esszimmerstuhl", "barhocker"],
-        "hr": ["blagovaonski stol", "blagovaonska stolica", "barska stolica"],
-    },
-    "living_tables": {
-        "label": "Mize za dnevno sobo",
-        "si": ["klubska mizica", "stranska mizica"],
-        "at": ["couchtisch", "beistelltisch"],
-        "hr": ["stolić za kavu", "pomoćni stolić"],
-    },
-    "office": {
-        "label": "Pisalne mize in pisarniški stoli",
-        "si": ["pisalna miza", "pisarniški stol"],
-        "at": ["schreibtisch", "bürostuhl"],
-        "hr": ["radni stol", "uredska stolica"],
-    },
-    "tv_media": {
-        "label": "TV omarice in pohištvo za medije",
-        "si": ["tv omarica", "polica za medije"],
-        "at": ["tv-möbel", "mediamöbel"],
-        "hr": ["tv ormarić", "polica za medije"],
-    },
-    "kitchen": {
-        "label": "Kuhinjski elementi",
-        "si": ["kuhinjski element", "kuhinjska omarica"],
-        "at": ["küchenschrank", "küchenhängeschrank"],
-        "hr": ["kuhinjski element", "kuhinjski ormarić"],
-    },
-    "bathroom": {
-        "label": "Kopalniško pohištvo",
-        "si": ["kopalniška omarica", "umivalniška omara"],
-        "at": ["badezimmermöbel", "waschbeckenschrank"],
-        "hr": ["kupaonski ormarić", "ormarić s umivaonikom"],
-    },
-    "kids": {
-        "label": "Otroško in dojenčkovo pohištvo",
-        "si": ["otroška omara", "previjalna miza", "visok stolček"],
-        "at": ["kinderschrank", "wickeltisch", "kinderhochstuhl"],
-        "hr": ["dječji ormar", "previjaonik", "dječja visoka stolica"],
-    },
-    "outdoor": {
-        "label": "Vrtno pohištvo",
-        "si": ["vrtna miza", "vrtni stol", "ležalnik"],
-        "at": ["gartentisch", "gartenstuhl", "sonnenliege"],
-        "hr": ["vrtni stol", "vrtna stolica", "ležaljka"],
-    },
-    "hallway": {
-        "label": "Predsobno pohištvo",
-        "si": ["obešalnik", "klop za čevlje", "omarica za čevlje"],
-        "at": ["garderobenständer", "schuhschrank"],
-        "hr": ["vješalica za odjeću", "ormarić za cipele"],
-    },
-    "mirrors": {
-        "label": "Ogledala",
-        "si": ["stensko ogledalo", "stoječe ogledalo"],
-        "at": ["wandspiegel", "standspiegel"],
-        "hr": ["zidno zrcalo", "stojeće zrcalo"],
-    },
-    "storage_boxes": {
-        "label": "Škatle in organizatorji za shranjevanje",
-        "si": ["škatla za shranjevanje", "organizator za predal", "obešalnik za oblačila"],
-        "at": ["aufbewahrungsbox", "schubladen-organizer", "kleiderbügel"],
-        "hr": ["kutija za pohranu", "organizator za ladicu", "vješalica za odjeću"],
-    },
-}
+# Vse kategorijske kode iz glavnega menija "Izdelki" na ikea.com/si/sl -
+# tako nadrejene (npr. "st001") kot podrejene (npr. "19053"). Kode so
+# jezikovno neodvisne (isti "fu004" vrne pisalne mize v SI, Schreibtische v
+# AT, radne stolove u HR), zato zadostuje en sam seznam za vse tri države.
+CATEGORY_CODES = [
+    "fu004", "20649", "20652", "53249", "55002", "54173", "47068", "st001", "19053", "10475",
+    "46052", "st003", "st002", "st004", "700440", "30454", "fu005", "46080", "21958", "10385",
+    "700411", "10456", "18706", "st007", "10550", "10452", "10551", "34470", "10573", "15937",
+    "16195", "46078", "st006", "10555", "16248", "bm001", "bm003", "24827", "bm002", "tl004",
+    "24825", "20656", "19064", "57280", "19059", "54992", "700513", "24822", "700640", "fu003",
+    "10663", "31786", "fu006", "57527", "20926", "57536", "10664", "31785", "ka001", "700292",
+    "ka003", "700293", "24255", "ka002", "24264", "16200", "20676", "49117", "10471", "24263",
+    "10482", "19121", "22957", "16282", "16298", "kt001", "18860", "kt003", "kt002", "16043",
+    "16044", "18868", "20538", "18865", "15938", "20636", "15934", "18850", "31772", "42924",
+    "18714", "20560", "fu002", "700675", "700676", "22659", "700417", "16244", "19141", "10705",
+    "18768", "bc004", "45782", "700319", "59250", "20611", "bc001", "bc003", "bc002", "ba001",
+    "700450", "20804", "20719", "20808", "16233", "20615", "20490", "20858", "20859", "tl003",
+    "ba003", "10736", "40690", "20723", "20724", "30565", "tl001", "10653", "10659", "20528",
+    "17893", "20542", "10655", "18730", "18690", "700528", "42925", "tl002", "10700", "10701",
+    "18891", "700628", "14350", "li001", "li002", "16280", "14971", "36812", "17897", "20514",
+    "de001", "10757", "10769", "24924", "20489", "pp003", "pp004", "10760", "10574", "10759",
+    "42926", "25227", "od001", "od003", "700349", "31787", "17887", "34203", "21957", "34204",
+    "pp001", "20494", "24887", "20493", "700778", "he001", "40842", "40843", "40845", "36814",
+    "44531", "49081", "hs001", "56472", "46194", "lc001", "20601", "20609", "48925", "16213",
+    "20608", "20602", "55004", "20826", "hi001", "16292", "sp001", "46077", "55984", "700718",
+    "42948", "pt001", "39569", "39570", "fb001", "25215", "25217", "46192", "25216", "25214",
+    "53254", "25213", "25212", "25211", "49147",
+]
 
 # IKEA-in interni "homeFurnishingBusinessName" je (skoraj vedno) v angleščini
 # ne glede na jezik strani - tu ga prevedemo v slovenske nazive sklopov za
-# prikaz. Seznam ključev je izčrpen glede na to, kar dejansko vrne API za
-# si/at/hr (preverjeno ročno); nov, nepričakovan naziv se izpiše kot je.
+# prikaz. Nov, nepričakovan naziv se izpiše tak, kot ga vrne API.
 BUSINESS_NAME_LABELS = {
     "Living room seating": "Sedežno pohištvo (dnevna soba)",
     "Living room storage": "Shranjevanje za dnevno sobo",
@@ -168,53 +90,50 @@ BUSINESS_NAME_LABELS = {
     "Workspaces": "Domača pisarna",
     "Kitchen & appliances": "Kuhinja",
     "Bathroom": "Kopalnica",
-    "Children's IKEA": "Otroško pohištvo",
+    "Children's IKEA": "Otroško pohištvo in oprema",
     "Outdoor": "Vrtno pohištvo",
     "Home organisation": "Ureditev in shranjevanje",
     "Decoration": "Ogledala in dekoracija",
+    "Cooking": "Kuhanje in pribor",
+    "Lighting & Home electronics": "Razsvetljava in elektronika",
+    "Home textiles": "Tekstil za dom",
+    "Bed and bath textiles": "Tekstil za posteljo in kopalnico",
+    "Textiles": "Tekstil",
+    "Curtains & blinds": "Zavese in senčila",
+    "Plants & Flowers": "Rastline in rože",
+    "Plant pots": "Cvetlični lonci",
+    "Home smart": "Pametni dom",
+    "Home electronics": "Domača elektronika",
+    "Cleaning & laundry": "Čiščenje in pranje perila",
+    "Home improvement": "Izboljšave doma",
+    "Pets": "Izdelki za hišne ljubljenčke",
+    "Food & beverages": "Hrana in pijača",
+    "Tableware & cookware": "Namizna in kuhinjska posoda",
+    "Eating": "Jedilni pribor in posoda",
+    "Rugs": "Preproge",
+    "Consumer packaged food goods": "Švedska hrana in pijača",
+    "Other business opportunities": "Drugo",
 }
 
-# Ti nazivi pomenijo, da je izdelek pricurljal v rezultate zaradi širokega
-# iskalnega niza (npr. "regal" najde tudi kakšno svetilko), ni pa dejansko
-# pohištvo - take izdelke izločimo, da stran ostane pri temi "pohištvo".
-DROP_BUSINESS_NAMES = {
-    "Cooking",
-    "Lighting & Home electronics",
-    "Home textiles",
-    "Bed and bath textiles",
-}
 
-
-def slugify(value: str) -> str:
-    value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
-    return "".join(c if c.isalnum() else "-" for c in value.lower()).strip("-")
-
-
-def fetch_query(cc: str, lc: str, query: str) -> list:
+def fetch_category(cc: str, lc: str, category: str) -> list:
     url = API_BASE.format(cc=cc, lc=lc)
-    params = {"q": query, "size": PAGE_SIZE, "c": "sr"}
+    params = {"category": category, "size": PAGE_SIZE}
     try:
-        resp = requests.get(url, params=params, headers=HEADERS, timeout=20)
+        resp = requests.get(url, params=params, headers=HEADERS, timeout=30)
         resp.raise_for_status()
         data = resp.json()
-    except Exception as exc:  # noqa: BLE001 - scraper must keep going on a bad query
-        print(f"    ! napaka pri '{query}' ({cc}): {exc}")
+    except Exception as exc:  # noqa: BLE001 - scraper must keep going on a bad category
+        print(f"    ! napaka pri kategoriji '{category}' ({cc}): {exc}")
         return []
 
-    main = data.get("searchResultPage", {}).get("products", {}).get("main", {})
-    return main.get("items", []) or []
+    return data.get("productListPage", {}).get("productWindow", []) or []
 
 
-def extract_product(item: dict, category_key: str) -> dict | None:
-    p = item.get("product")
-    if not p or item.get("type") != "PRODUCT":
-        return None
-
+def extract_product(p: dict) -> dict | None:
     price = p.get("salesPrice", {})
     business = p.get("businessStructure", {})
     business_name = business.get("homeFurnishingBusinessName")
-    if business_name in DROP_BUSINESS_NAMES:
-        return None
 
     previous_price = None
     prev = price.get("previous")
@@ -244,9 +163,8 @@ def extract_product(item: dict, category_key: str) -> dict | None:
         "image": p.get("mainImageUrl"),
         "url": p.get("pipUrl"),
         "businessName": business_name,
-        "businessLabel": BUSINESS_NAME_LABELS.get(business_name, business_name or "Drugo pohištvo"),
+        "businessLabel": BUSINESS_NAME_LABELS.get(business_name, business_name or "Drugo"),
         "categoryPath": [c.get("name") for c in (p.get("categoryPath") or [])],
-        "matchedCategoryKey": category_key,
     }
 
 
@@ -256,20 +174,19 @@ def scrape_country(cc_key: str) -> dict:
     print(f"== {country['label']} ({cc}/{lc}) ==")
 
     by_item_no: dict[str, dict] = {}
-    for category_key, cat in CATEGORY_QUERIES.items():
-        queries = cat.get(cc_key, [])
-        for query in queries:
-            items = fetch_query(cc, lc, query)
-            found = 0
-            for item in items:
-                product = extract_product(item, category_key)
-                if not product or not product["itemNo"]:
-                    continue
-                if product["itemNo"] not in by_item_no:
-                    by_item_no[product["itemNo"]] = product
-                    found += 1
-            print(f"  '{query}': +{found} novih (skupaj {len(by_item_no)})")
-            time.sleep(REQUEST_DELAY_SECONDS)
+    for i, category in enumerate(CATEGORY_CODES, 1):
+        products = fetch_category(cc, lc, category)
+        found = 0
+        for p in products:
+            product = extract_product(p)
+            if not product or not product["itemNo"]:
+                continue
+            if product["itemNo"] not in by_item_no:
+                by_item_no[product["itemNo"]] = product
+                found += 1
+        if i % 20 == 0 or i == len(CATEGORY_CODES):
+            print(f"  [{i}/{len(CATEGORY_CODES)}] '{category}': +{found} (skupaj {len(by_item_no)})")
+        time.sleep(REQUEST_DELAY_SECONDS)
 
     return {
         "label": country["label"],
