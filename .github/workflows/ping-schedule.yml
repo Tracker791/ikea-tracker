@@ -1,0 +1,9 @@
+name: Ping Schedule
+on:
+  schedule:
+    - cron: "0 4 * * *"
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello"
