@@ -147,6 +147,12 @@ CATEGORY_QUERIES = {
         "at": ["wandspiegel", "standspiegel"],
         "hr": ["zidno zrcalo", "stojeće zrcalo"],
     },
+    "storage_boxes": {
+        "label": "Škatle in organizatorji za shranjevanje",
+        "si": ["škatla za shranjevanje", "organizator za predal", "obešalnik za oblačila"],
+        "at": ["aufbewahrungsbox", "schubladen-organizer", "kleiderbügel"],
+        "hr": ["kutija za pohranu", "organizator za ladicu", "vješalica za odjeću"],
+    },
 }
 
 # IKEA-in interni "homeFurnishingBusinessName" je (skoraj vedno) v angleščini
