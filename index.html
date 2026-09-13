@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IKEA pohištvo: SI · AT · HR</title>
-<meta name="description" content="Primerjava cen IKEA pohištva med Slovenijo, Avstrijo in Hrvaško, razvrščeno po IKEA-inih lastnih sklopih.">
+<meta name="description" content="En iskalnik za IKEA pohištvo, ki na vsakem izdelku pokaže ceno v Sloveniji, Avstriji in na Hrvaškem hkrati.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛋️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,6 +24,7 @@
     --good-soft:#e0eee1;
     --bad:#a23b3b;
     --bad-soft:#f5e1df;
+    --muted-row:#00000008;
     --si:#3a5a9a; --at:#a23b3b; --hr:#c0392b;
     --shadow: 0 1px 2px rgba(32,38,31,.06), 0 8px 24px -12px rgba(32,38,31,.18);
   }
@@ -33,6 +34,7 @@
       --text:#eae6db; --text-muted:#a3ab9d; --border:#39413a;
       --accent:#7bb8ba; --accent-soft:#233330; --accent-warm:#e2a15f; --accent-warm-soft:#3a2c1c;
       --good:#7fc98a; --good-soft:#1f3323; --bad:#e08b7d; --bad-soft:#3a2320;
+      --muted-row:#ffffff08;
       --si:#8fa9dd; --at:#d98a8a; --hr:#e08b7d;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
     }
@@ -42,6 +44,7 @@
     --text:#eae6db; --text-muted:#a3ab9d; --border:#39413a;
     --accent:#7bb8ba; --accent-soft:#233330; --accent-warm:#e2a15f; --accent-warm-soft:#3a2c1c;
     --good:#7fc98a; --good-soft:#1f3323; --bad:#e08b7d; --bad-soft:#3a2320;
+    --muted-row:#ffffff08;
     --si:#8fa9dd; --at:#d98a8a; --hr:#e08b7d;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
   }
@@ -60,32 +63,27 @@
   h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(28px,4vw,38px); margin:0; text-wrap:balance; letter-spacing:-.01em; }
   .lede{ color:var(--text-muted); max-width:70ch; font-size:15px; }
   .meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; }
-  .tag{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:3px 9px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+  .tag{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:3px 9px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); display:inline-flex; align-items:center; gap:5px; }
+  .tag b{ color:var(--text); font-weight:600; }
 
-  nav.countries{ display:flex; gap:8px; margin:20px 0 18px; border-bottom:1px solid var(--border); }
-  .country-btn{
-    font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:600;
-    padding:10px 16px; border:none; background:none; color:var(--text-muted);
-    cursor:pointer; border-bottom:2px solid transparent; display:flex; align-items:center; gap:7px;
-  }
-  .country-btn .dot{ width:8px; height:8px; border-radius:50%; }
-  .country-btn.active{ color:var(--text); border-bottom-color:var(--accent); }
-  .country-btn .count{ color:var(--text-muted); font-weight:400; }
-
-  .toolbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:18px; }
+  .toolbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:20px 0 18px; }
   .search-box{
-    flex:1 1 260px; display:flex; align-items:center; gap:8px;
+    flex:1 1 280px; display:flex; align-items:center; gap:8px;
     background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:9px 12px;
+    padding:10px 12px;
   }
   .search-box input{
-    border:none; outline:none; background:none; color:var(--text); font-size:14px; width:100%;
+    border:none; outline:none; background:none; color:var(--text); font-size:14.5px; width:100%;
     font-family:'IBM Plex Sans', sans-serif;
   }
   .search-box svg{ flex:none; color:var(--text-muted); }
   select#sortSelect{
     font-family:'IBM Plex Sans',sans-serif; font-size:13.5px; padding:9px 10px;
     border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text);
+  }
+  label.only3{
+    display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--text-muted);
+    font-family:'IBM Plex Mono',monospace; white-space:nowrap;
   }
   .back-btn{
     font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600;
@@ -108,29 +106,34 @@
   .sklop-card .from b{ color:var(--accent-warm); font-family:'IBM Plex Mono',monospace; }
 
   /* product grid */
-  #productGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; }
+  #productGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
   .p-card{
     background:var(--surface); border:1px solid var(--border); border-radius:14px;
-    overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;
-    text-decoration:none; color:var(--text);
+    overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; color:var(--text);
   }
-  .p-card:hover{ border-color:var(--accent); }
   .p-card .thumb{ aspect-ratio:1/1; background:var(--surface-2); display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .p-card .thumb img{ width:100%; height:100%; object-fit:contain; }
-  .p-card .body{ padding:12px 13px 14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .p-card .body{ padding:12px 13px 13px; display:flex; flex-direction:column; gap:4px; }
   .p-card .name{ font-weight:700; font-size:14px; }
   .p-card .type{ font-size:12.5px; color:var(--text-muted); }
-  .p-card .measure{ font-size:11.5px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; }
-  .p-card .price-row{ margin-top:auto; padding-top:8px; display:flex; align-items:baseline; gap:7px; flex-wrap:wrap; }
-  .p-card .price{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px; }
-  .p-card .price.sale{ color:var(--accent-warm); }
-  .p-card .was{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-muted); text-decoration:line-through; }
-  .badges{ display:flex; gap:5px; flex-wrap:wrap; margin-top:2px; }
-  .badge{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.03em; padding:2px 6px; border-radius:100px; font-weight:600; }
-  .badge.new{ background:var(--good-soft); color:var(--good); }
-  .badge.sale{ background:var(--accent-warm-soft); color:var(--accent-warm); }
-  .badge.last{ background:var(--bad-soft); color:var(--bad); }
-  .badge.changed{ background:var(--accent-soft); color:var(--accent); }
+  .p-card .measure{ font-size:11.5px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; margin-bottom:4px; }
+
+  .price-table{ display:flex; flex-direction:column; border-top:1px solid var(--border); }
+  .price-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:7px 13px; text-decoration:none; color:var(--text); font-size:13px;
+  }
+  .price-row:nth-child(odd){ background:var(--muted-row); }
+  .price-row .cc{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px; }
+  .price-row .val{ font-family:'IBM Plex Mono',monospace; font-weight:600; display:flex; align-items:baseline; gap:6px; }
+  .price-row .was{ font-size:11px; color:var(--text-muted); text-decoration:line-through; font-weight:400; }
+  .price-row.best .val{ color:var(--accent-warm); }
+  .price-row.best .cc{ color:var(--accent-warm); }
+  .price-row.missing{ color:var(--text-muted); opacity:.55; pointer-events:none; }
+  .price-row.missing .val{ font-family:'IBM Plex Sans',sans-serif; font-weight:400; font-size:12px; }
+  .badge-mini{ font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:.03em; padding:1px 5px; border-radius:100px; font-weight:600; }
+  .badge-mini.new{ background:var(--good-soft); color:var(--good); }
+  .badge-mini.last{ background:var(--bad-soft); color:var(--bad); }
 
   #loadMoreWrap{ display:flex; justify-content:center; margin-top:22px; }
   #loadMoreBtn{
@@ -148,7 +151,8 @@
   }
 
   @media (max-width:560px){
-    #sklopGrid, #productGrid{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+    #sklopGrid{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+    #productGrid{ grid-template-columns:1fr 1fr; }
   }
 </style>
 </head>
@@ -157,16 +161,14 @@
 
   <header class="top">
     <div class="eyebrow">Cenovna primerjava · IKEA pohištvo</div>
-    <h1>Koliko stane IKEA pohištvo doma in čez mejo</h1>
-    <p class="lede">Skoraj 6.000 kosov pohištva, samodejno preverjenih na uradnih straneh ikea.com za Slovenijo, Avstrijo in Hrvaško, razvrščenih v sklope po IKEA-ini lastni klasifikaciji.</p>
+    <h1>En izdelek, tri cene: SI · AT · HR</h1>
+    <p class="lede">Vsak izdelek se pojavi samo enkrat — poleg njega pa cena v Sloveniji, Avstriji in na Hrvaškem, kot jih uradne strani ikea.com kažejo prav zdaj. Najcenejša država je obarvana.</p>
     <div class="meta">
       <span class="tag" id="updatedTag">nalagam …</span>
       <span class="tag">vse cene v EUR</span>
       <span class="tag">ni uradna stran IKEA</span>
     </div>
   </header>
-
-  <nav class="countries" id="countryNav"></nav>
 
   <div class="toolbar">
     <button class="back-btn" id="backBtn">← Vsi sklopi</button>
@@ -176,11 +178,12 @@
     </div>
     <select id="sortSelect">
       <option value="relevance">Privzeto</option>
-      <option value="price-asc">Cena: nižja → višja</option>
-      <option value="price-desc">Cena: višja → nižja</option>
-      <option value="rating-desc">Najboljše ocenjeno</option>
+      <option value="price-asc">Najnižja cena: nižja → višja</option>
+      <option value="price-desc">Najnižja cena: višja → nižja</option>
+      <option value="spread-desc">Največja razlika med državami</option>
       <option value="name-asc">Ime A–Ž</option>
     </select>
+    <label class="only3"><input type="checkbox" id="only3Check"> samo na voljo v vseh treh</label>
   </div>
 
   <div id="sklopGrid"></div>
@@ -189,7 +192,7 @@
   <div id="loadMoreWrap" style="display:none;"><button id="loadMoreBtn">Prikaži več</button></div>
 
   <footer>
-    <span>Vir: uradni iskalni API ikea.com (si/at/hr) · samodejna osvežitev.</span>
+    <span>Vir: uradni iskalni API ikea.com (si/at/hr) · samodejna dnevna osvežitev.</span>
     <span id="totalTag"></span>
   </footer>
 
@@ -198,17 +201,16 @@
 <script src="data.js"></script>
 <script>
 (function(){
-  const DATA = window.IKEA_DATA || { generatedAt: null, countries: {} };
+  const RAW = window.IKEA_DATA || { generatedAt: null, countries: {} };
   const COUNTRY_ORDER = ["si","at","hr"];
   const FLAGS = { si:"🇸🇮", at:"🇦🇹", hr:"🇭🇷" };
+  const CC_LABEL = { si:"SI", at:"AT", hr:"HR" };
 
-  let activeCountry = "si";
   let activeSklop = null; // null = overview
   let visibleCount = 40;
   const PAGE = 40;
 
   const el = (sel) => document.querySelector(sel);
-  const countryNav = el("#countryNav");
   const sklopGrid = el("#sklopGrid");
   const productGrid = el("#productGrid");
   const emptyMsg = el("#emptyMsg");
@@ -217,6 +219,7 @@
   const backBtn = el("#backBtn");
   const searchInput = el("#searchInput");
   const sortSelect = el("#sortSelect");
+  const only3Check = el("#only3Check");
   const updatedTag = el("#updatedTag");
   const totalTag = el("#totalTag");
 
@@ -225,41 +228,69 @@
     const d = new Date(iso);
     return "osveženo " + d.toLocaleString("sl-SI", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
   }
-
   function money(n, currency){
     if(n == null) return "";
-    return n.toLocaleString("sl-SI", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " " + (currency === "EUR" ? "€" : currency);
+    return n.toLocaleString("sl-SI", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " " + (currency === "EUR" ? "€" : (currency||""));
   }
 
-  function countryProducts(cc){
-    return (DATA.countries[cc] && DATA.countries[cc].products) || [];
+  // --- Združi izdelke iz vseh treh držav v en katalog po globalni številki izdelka (itemNo) ---
+  function buildMerged(){
+    const byItem = new Map();
+    for(const cc of COUNTRY_ORDER){
+      const country = RAW.countries[cc];
+      if(!country) continue;
+      for(const p of country.products){
+        if(!p.itemNo) continue;
+        if(!byItem.has(p.itemNo)) byItem.set(p.itemNo, {});
+        byItem.get(p.itemNo)[cc] = p;
+      }
+    }
+    const merged = [];
+    for(const [itemNo, byCc] of byItem){
+      const pick = COUNTRY_ORDER.map(cc=>byCc[cc]).find(Boolean);
+      const availableCcs = COUNTRY_ORDER.filter(cc=>byCc[cc]);
+      let cheapest = null;
+      for(const cc of availableCcs){
+        const pr = byCc[cc].price;
+        if(pr != null && (cheapest==null || pr < cheapest.price)) cheapest = { cc, price: pr };
+      }
+      const prices = availableCcs.map(cc=>byCc[cc].price).filter(v=>v!=null);
+      const spread = prices.length ? Math.max(...prices) - Math.min(...prices) : 0;
+      merged.push({
+        itemNo,
+        name: pick.name,
+        typeName: pick.typeName,
+        measure: pick.measure,
+        validDesign: pick.validDesign,
+        image: pick.image,
+        businessLabel: pick.businessLabel || "Drugo pohištvo",
+        byCc,
+        availableCount: availableCcs.length,
+        cheapestCc: cheapest ? cheapest.cc : null,
+        minPrice: cheapest ? cheapest.price : null,
+        spread,
+      });
+    }
+    return merged;
   }
 
-  function buildSklopi(cc){
-    const products = countryProducts(cc);
+  const MERGED = buildMerged();
+
+  function buildSklopi(list){
     const map = new Map();
-    for(const p of products){
-      const key = p.businessLabel || "Drugo";
+    for(const p of list){
+      const key = p.businessLabel;
       if(!map.has(key)) map.set(key, []);
       map.get(key).push(p);
     }
     return [...map.entries()].map(([label, items]) => {
-      const cheapest = items.reduce((min,p)=> (p.price!=null && (min==null || p.price<min.price)) ? p : min, null);
+      const cheapest = items.reduce((min,p)=> (p.minPrice!=null && (min==null || p.minPrice<min.minPrice)) ? p : min, null);
       return { label, items, cheapest };
     }).sort((a,b)=> b.items.length - a.items.length);
   }
 
-  function renderCountryNav(){
-    countryNav.innerHTML = "";
-    for(const cc of COUNTRY_ORDER){
-      const country = DATA.countries[cc];
-      if(!country) continue;
-      const btn = document.createElement("button");
-      btn.className = "country-btn" + (cc===activeCountry ? " active" : "");
-      btn.innerHTML = `<span>${FLAGS[cc]}</span> ${country.label.replace("IKEA ","")} <span class="count">(${country.products.length})</span>`;
-      btn.onclick = () => { activeCountry = cc; activeSklop = null; render(); };
-      countryNav.appendChild(btn);
-    }
+  function currentPool(){
+    return only3Check.checked ? MERGED.filter(p => p.availableCount === 3) : MERGED;
   }
 
   function renderSklopOverview(){
@@ -269,7 +300,7 @@
     loadMoreWrap.style.display = "none";
     emptyMsg.style.display = "none";
 
-    const sklopi = buildSklopi(activeCountry);
+    const sklopi = buildSklopi(currentPool());
     sklopGrid.innerHTML = "";
     for(const s of sklopi){
       const card = document.createElement("button");
@@ -277,7 +308,7 @@
       card.innerHTML = `
         <div class="name">${s.label}</div>
         <div class="count">${s.items.length} izdelkov</div>
-        <div class="from">${s.cheapest ? "od <b>" + money(s.cheapest.price, s.cheapest.currency) + "</b>" : ""}</div>
+        <div class="from">${s.cheapest ? "od <b>" + money(s.cheapest.minPrice, "EUR") + "</b>" : ""}</div>
       `;
       card.onclick = () => { activeSklop = s.label; visibleCount = PAGE; render(); };
       sklopGrid.appendChild(card);
@@ -293,20 +324,54 @@
 
   function sortProducts(list, mode){
     const arr = list.slice();
-    if(mode === "price-asc") arr.sort((a,b)=> (a.price??1e9) - (b.price??1e9));
-    else if(mode === "price-desc") arr.sort((a,b)=> (b.price??-1) - (a.price??-1));
-    else if(mode === "rating-desc") arr.sort((a,b)=> (b.ratingValue??0) - (a.ratingValue??0));
+    if(mode === "price-asc") arr.sort((a,b)=> (a.minPrice??1e9) - (b.minPrice??1e9));
+    else if(mode === "price-desc") arr.sort((a,b)=> (b.minPrice??-1) - (a.minPrice??-1));
+    else if(mode === "spread-desc") arr.sort((a,b)=> b.spread - a.spread);
     else if(mode === "name-asc") arr.sort((a,b)=> (a.name||"").localeCompare(b.name||""));
     return arr;
   }
 
-  function badge(p){
-    const out = [];
-    if(p.status === "new") out.push('<span class="badge new">novo</span>');
-    if(p.status === "changed") out.push('<span class="badge changed">spremenjena cena</span>');
-    if(p.lastChance) out.push('<span class="badge last">zadnji kosi</span>');
-    if(p.priceTag && p.priceTag !== "NONE" && !p.lastChance) out.push('<span class="badge sale">' + (p.priceTagText || "akcija") + '</span>');
-    return out.join("");
+  function priceRow(p, cc){
+    const rec = p.byCc[cc];
+    if(!rec){
+      return `<span class="price-row missing"><span class="cc">${FLAGS[cc]} ${CC_LABEL[cc]}</span><span class="val">ni na voljo</span></span>`;
+    }
+    const isBest = p.cheapestCc === cc;
+    const badges = [];
+    if(rec.status === "new") badges.push('<span class="badge-mini new">novo</span>');
+    if(rec.lastChance) badges.push('<span class="badge-mini last">zadnji kosi</span>');
+    return `
+      <a class="price-row ${isBest ? 'best' : ''}" href="${rec.url || '#'}" target="_blank" rel="noopener">
+        <span class="cc">${FLAGS[cc]} ${CC_LABEL[cc]} ${badges.join('')}</span>
+        <span class="val">
+          ${rec.previousPrice ? `<span class="was">${money(rec.previousPrice, rec.currency)}</span>` : ""}
+          ${money(rec.price, rec.currency)}
+        </span>
+      </a>`;
+  }
+
+  function cardHtml(p){
+    return `
+      <div class="p-card">
+        <div class="thumb">${p.image ? `<img src="${p.image}?f=s" loading="lazy" alt="${p.name||''}">` : ""}</div>
+        <div class="body">
+          <div class="name">${p.name || ""}</div>
+          <div class="type">${p.typeName || ""}${p.validDesign ? ", " + p.validDesign : ""}</div>
+          <div class="measure">${p.measure || ""}</div>
+        </div>
+        <div class="price-table">
+          ${COUNTRY_ORDER.map(cc => priceRow(p, cc)).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function currentFilteredSorted(){
+    let list = currentPool();
+    if(activeSklop) list = list.filter(p => p.businessLabel === activeSklop);
+    const q = searchInput.value.trim();
+    list = list.filter(p => matchesSearch(p, q));
+    return sortProducts(list, sortSelect.value);
   }
 
   function renderProductGrid(){
@@ -314,12 +379,7 @@
     productGrid.style.display = "grid";
     backBtn.classList.add("show");
 
-    let list = countryProducts(activeCountry);
-    if(activeSklop) list = list.filter(p => (p.businessLabel||"Drugo") === activeSklop);
-    const q = searchInput.value.trim();
-    list = list.filter(p => matchesSearch(p, q));
-    list = sortProducts(list, sortSelect.value);
-
+    const list = currentFilteredSorted();
     if(list.length === 0){
       productGrid.innerHTML = "";
       emptyMsg.style.display = "block";
@@ -327,91 +387,30 @@
       return;
     }
     emptyMsg.style.display = "none";
-
     const shown = list.slice(0, visibleCount);
-    productGrid.innerHTML = shown.map(p => `
-      <a class="p-card" href="${p.url || '#'}" target="_blank" rel="noopener">
-        <div class="thumb">${p.image ? `<img src="${p.image}?f=s" loading="lazy" alt="${p.name||''}">` : ""}</div>
-        <div class="body">
-          <div class="name">${p.name || ""}</div>
-          <div class="type">${p.typeName || ""}${p.validDesign ? ", " + p.validDesign : ""}</div>
-          <div class="measure">${p.measure || ""}</div>
-          <div class="badges">${badge(p)}</div>
-          <div class="price-row">
-            <span class="price ${p.previousPrice ? 'sale' : ''}">${money(p.price, p.currency)}</span>
-            ${p.previousPrice ? `<span class="was">${money(p.previousPrice, p.currency)}</span>` : ""}
-          </div>
-        </div>
-      </a>
-    `).join("");
-
+    productGrid.innerHTML = shown.map(cardHtml).join("");
     loadMoreWrap.style.display = (list.length > shown.length) ? "flex" : "none";
   }
 
   function render(){
-    renderCountryNav();
-    if(activeSklop == null){
+    const searching = searchInput.value.trim() !== "";
+    if(activeSklop == null && !searching){
       renderSklopOverview();
     } else {
       renderProductGrid();
     }
   }
 
-  backBtn.onclick = () => { activeSklop = null; searchInput.value=""; render(); };
+  backBtn.onclick = () => { activeSklop = null; searchInput.value=""; visibleCount = PAGE; render(); };
   loadMoreBtn.onclick = () => { visibleCount += PAGE; renderProductGrid(); };
-  sortSelect.onchange = () => { visibleCount = PAGE; renderProductGrid(); };
-  searchInput.oninput = () => {
-    visibleCount = PAGE;
-    if(activeSklop == null && searchInput.value.trim() !== ""){
-      // globalno iskanje čez vse sklope naenkrat
-      activeSklop = "__ALL__";
-    } else if(searchInput.value.trim() === "" && activeSklop === "__ALL__"){
-      activeSklop = null;
-    }
-    if(activeSklop === "__ALL__"){
-      sklopGrid.style.display = "none";
-      productGrid.style.display = "grid";
-      backBtn.classList.add("show");
-      let list = countryProducts(activeCountry).filter(p => matchesSearch(p, searchInput.value.trim()));
-      list = sortProducts(list, sortSelect.value);
-      renderFiltered(list);
-    } else {
-      render();
-    }
-  };
-
-  function renderFiltered(list){
-    if(list.length === 0){
-      productGrid.innerHTML = "";
-      emptyMsg.style.display = "block";
-      loadMoreWrap.style.display = "none";
-      return;
-    }
-    emptyMsg.style.display = "none";
-    const shown = list.slice(0, visibleCount);
-    productGrid.innerHTML = shown.map(p => `
-      <a class="p-card" href="${p.url || '#'}" target="_blank" rel="noopener">
-        <div class="thumb">${p.image ? `<img src="${p.image}?f=s" loading="lazy" alt="${p.name||''}">` : ""}</div>
-        <div class="body">
-          <div class="name">${p.name || ""}</div>
-          <div class="type">${p.typeName || ""}${p.validDesign ? ", " + p.validDesign : ""}</div>
-          <div class="measure">${p.measure || ""}</div>
-          <div class="badges">${badge(p)}</div>
-          <div class="price-row">
-            <span class="price ${p.previousPrice ? 'sale' : ''}">${money(p.price, p.currency)}</span>
-            ${p.previousPrice ? `<span class="was">${money(p.previousPrice, p.currency)}</span>` : ""}
-          </div>
-        </div>
-      </a>
-    `).join("");
-    loadMoreWrap.style.display = (list.length > shown.length) ? "flex" : "none";
-    loadMoreBtn.onclick = () => { visibleCount += PAGE; renderFiltered(list); };
-  }
+  sortSelect.onchange = () => { visibleCount = PAGE; render(); };
+  only3Check.onchange = () => { visibleCount = PAGE; render(); };
+  searchInput.oninput = () => { visibleCount = PAGE; render(); };
 
   // init
-  updatedTag.textContent = fmtDate(DATA.generatedAt);
-  const total = COUNTRY_ORDER.reduce((sum,cc)=> sum + countryProducts(cc).length, 0);
-  totalTag.textContent = total.toLocaleString("sl-SI") + " izdelkov skupaj v vseh treh državah";
+  updatedTag.innerHTML = fmtDate(RAW.generatedAt);
+  const perCountry = COUNTRY_ORDER.map(cc => `${FLAGS[cc]} <b>${(RAW.countries[cc]?.products.length||0).toLocaleString("sl-SI")}</b>`).join(" · ");
+  totalTag.innerHTML = MERGED.length.toLocaleString("sl-SI") + " edinstvenih izdelkov skupaj (" + perCountry + ")";
   render();
 })();
 </script>
