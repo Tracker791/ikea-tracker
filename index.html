@@ -178,10 +178,19 @@
   .p-card:hover{ border-color:var(--blue); transform:translateY(-3px); box-shadow:0 12px 22px -14px rgba(0,20,50,.28); }
   .p-card .thumb{ aspect-ratio:1/1; background:#f5f5f5; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .p-card .thumb img{ width:100%; height:100%; object-fit:contain; }
-  .p-card .body{ padding:12px 13px 10px; display:flex; flex-direction:column; gap:3px; }
-  .p-card .name{ font-weight:700; font-size:14px; color:var(--text); }
+  .p-card .body{ padding:12px 13px 10px; display:flex; flex-direction:column; gap:3px; position:relative; }
+  .p-card .name{ font-weight:700; font-size:14px; color:var(--text); padding-right:34px; }
   .p-card .type{ font-size:13px; color:var(--text-muted); }
   .p-card .measure{ font-size:12px; color:var(--text-muted); margin-bottom:2px; }
+  .add-cart-btn{
+    position:absolute; top:10px; right:11px; width:30px; height:30px; border-radius:50%;
+    border:1.6px solid var(--border-strong); background:#fff; color:var(--blue);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .add-cart-btn:hover{ border-color:var(--blue); background:var(--blue); color:#fff; transform:scale(1.08); }
+  .add-cart-btn.added{ background:var(--good); border-color:var(--good); color:#fff; }
+  .add-cart-btn svg{ width:15px; height:15px; }
 
   .price-table{ display:flex; flex-direction:column; border-top:1px solid var(--border); }
   .price-row{
@@ -211,6 +220,71 @@
   #loadMoreBtn:hover{ border-color:var(--blue); color:var(--blue); }
 
   .empty{ color:var(--text-muted); font-size:14px; padding:40px 0; text-align:center; }
+
+  /* košarica */
+  .cart-fab{
+    position:fixed; right:22px; bottom:22px; z-index:40;
+    width:58px; height:58px; border-radius:50%; background:var(--blue); color:#fff;
+    border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px -8px rgba(0,20,50,.5); transition:transform .15s ease;
+  }
+  .cart-fab:hover{ transform:scale(1.06); }
+  .cart-fab svg{ width:24px; height:24px; }
+  .cart-fab .badge{
+    position:absolute; top:-4px; right:-4px; min-width:22px; height:22px; padding:0 5px;
+    background:var(--yellow); color:#111; border-radius:64px; font-size:12px; font-weight:900;
+    display:flex; align-items:center; justify-content:center; border:2px solid #fff;
+  }
+  .cart-fab .badge[hidden]{ display:none; }
+
+  .cart-overlay{
+    position:fixed; inset:0; background:rgba(10,15,25,.5); z-index:50;
+    display:flex; justify-content:flex-end;
+  }
+  .cart-overlay[hidden]{ display:none; }
+  .cart-panel{
+    background:#fff; width:min(420px, 100%); height:100%; overflow-y:auto;
+    display:flex; flex-direction:column; animation:slide-in .25s ease;
+  }
+  @keyframes slide-in{ from{ transform:translateX(100%); } to{ transform:translateX(0); } }
+  .cart-head{
+    display:flex; align-items:center; justify-content:space-between; padding:16px 18px;
+    border-bottom:1px solid var(--border); position:sticky; top:0; background:#fff;
+  }
+  .cart-head h3{ font-size:17px; font-weight:900; color:var(--text); margin:0; }
+  .cart-close{ border:none; background:var(--chip); width:32px; height:32px; border-radius:50%; cursor:pointer; color:var(--text); display:flex; align-items:center; justify-content:center; }
+  .cart-close:hover{ background:var(--border); }
+  .cart-body{ padding:8px 18px 18px; flex:1; }
+  .cart-empty{ color:var(--text-muted); font-size:13.5px; padding:30px 0; text-align:center; }
+  .cart-item{ display:flex; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); align-items:center; }
+  .cart-item .thumb{ width:56px; height:56px; flex:none; background:#f5f5f5; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .cart-item .thumb img{ width:100%; height:100%; object-fit:contain; }
+  .cart-item .info{ flex:1; min-width:0; }
+  .cart-item .name{ font-weight:700; font-size:13.5px; color:var(--text); }
+  .cart-item .type{ font-size:12px; color:var(--text-muted); }
+  .cart-item .qty{ display:flex; align-items:center; gap:6px; margin-top:4px; }
+  .cart-item .qty button{ width:22px; height:22px; border-radius:50%; border:1.6px solid var(--border-strong); background:#fff; cursor:pointer; font-weight:700; color:var(--text); line-height:1; }
+  .cart-item .qty button:hover{ border-color:var(--blue); color:var(--blue); }
+  .cart-item .qty span{ font-size:13px; font-weight:700; min-width:16px; text-align:center; }
+  .cart-item .remove{ border:none; background:none; color:var(--text-muted); cursor:pointer; font-size:18px; line-height:1; padding:4px; }
+  .cart-item .remove:hover{ color:var(--bad); }
+
+  .cart-totals{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+  .cart-totals-title{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin:14px 0 2px; }
+  .total-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:11px 13px; border-radius:8px; border:1.6px solid var(--border); font-size:14px;
+  }
+  .total-row.best{ background:var(--yellow); border-color:var(--yellow); }
+  .total-row .cc{ font-weight:700; display:flex; flex-direction:column; }
+  .total-row .cc .miss{ font-size:11px; font-weight:400; color:var(--bad); }
+  .total-row.best .cc .miss{ color:#5a3d00; }
+  .total-row .sum{ font-weight:900; font-size:16px; }
+  .cart-clear{
+    margin-top:16px; width:100%; padding:11px; border-radius:64px; border:1.6px solid var(--border-strong);
+    background:#fff; color:var(--text-muted); font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .cart-clear:hover{ border-color:var(--bad); color:var(--bad); }
 
   footer{
     margin-top:48px; padding-top:16px; border-top:1px solid var(--border);
@@ -293,6 +367,21 @@
 
 </div>
 
+<button class="cart-fab" id="cartFab" aria-label="Odpri košarico">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 4.5 2H2"/><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/></svg>
+  <span class="badge" id="cartBadge" hidden>0</span>
+</button>
+
+<div class="cart-overlay" id="cartOverlay" hidden>
+  <div class="cart-panel">
+    <div class="cart-head">
+      <h3>Moja košarica</h3>
+      <button class="cart-close" id="cartClose" aria-label="Zapri">✕</button>
+    </div>
+    <div class="cart-body" id="cartBody"></div>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script>
 (function(){
@@ -367,6 +456,134 @@
   }
 
   const MERGED = buildMerged();
+  const MERGED_BY_ITEM = new Map(MERGED.map(p => [p.itemNo, p]));
+
+  // --- Košarica: shranjena lokalno v tem brskalniku (ni deljena med obiskovalci) ---
+  const CART_KEY = "ikea-primerjava-cart-v1";
+  let cart = {};
+  try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}") || {}; } catch(e){ cart = {}; }
+
+  const cartFab = el("#cartFab");
+  const cartBadge = el("#cartBadge");
+  const cartOverlay = el("#cartOverlay");
+  const cartBody = el("#cartBody");
+  const cartClose = el("#cartClose");
+
+  function saveCart(){ try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch(e){} }
+  function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b, 0); }
+  function updateCartBadge(){
+    const n = cartCount();
+    cartBadge.textContent = n;
+    cartBadge.hidden = n === 0;
+  }
+
+  function addToCart(itemNo){
+    cart[itemNo] = (cart[itemNo] || 0) + 1;
+    saveCart();
+    updateCartBadge();
+  }
+  function setQty(itemNo, qty){
+    if(qty <= 0) delete cart[itemNo];
+    else cart[itemNo] = qty;
+    saveCart();
+    updateCartBadge();
+    renderCart();
+  }
+  function removeFromCart(itemNo){
+    delete cart[itemNo];
+    saveCart();
+    updateCartBadge();
+    renderCart();
+  }
+
+  function computeCartTotals(){
+    const items = Object.entries(cart)
+      .map(([itemNo, qty]) => ({ product: MERGED_BY_ITEM.get(itemNo), qty, itemNo }))
+      .filter(x => x.product);
+    const totals = {};
+    for(const cc of COUNTRY_ORDER){
+      let sum = 0; const missing = [];
+      for(const { product, qty } of items){
+        const rec = product.byCc[cc];
+        if(rec && rec.price != null) sum += rec.price * qty;
+        else missing.push(product.name);
+      }
+      totals[cc] = { sum, missing };
+    }
+    return { items, totals };
+  }
+
+  function renderCart(){
+    const { items, totals } = computeCartTotals();
+    if(items.length === 0){
+      cartBody.innerHTML = '<div class="cart-empty">Košarica je prazna. Dodaj izdelke z gumbom <b>+</b> na kartici izdelka.</div>';
+      return;
+    }
+    const complete = COUNTRY_ORDER.filter(cc => totals[cc].missing.length === 0);
+    let bestCc = null;
+    if(complete.length){
+      bestCc = complete.reduce((best, cc) => (best == null || totals[cc].sum < totals[best].sum) ? cc : best, null);
+    }
+
+    const itemsHtml = items.map(({ product, qty, itemNo }) => `
+      <div class="cart-item">
+        <div class="thumb">${product.image ? `<img src="${product.image}?f=s" alt="">` : ""}</div>
+        <div class="info">
+          <div class="name">${product.name || ""}</div>
+          <div class="type">${product.typeName || ""}</div>
+          <div class="qty">
+            <button data-qty-minus="${itemNo}" aria-label="Zmanjšaj">−</button>
+            <span>${qty}</span>
+            <button data-qty-plus="${itemNo}" aria-label="Povečaj">+</button>
+          </div>
+        </div>
+        <button class="remove" data-remove="${itemNo}" aria-label="Odstrani">✕</button>
+      </div>
+    `).join("");
+
+    const totalsHtml = COUNTRY_ORDER.map(cc => {
+      const t = totals[cc];
+      const isBest = cc === bestCc;
+      return `
+      <div class="total-row ${isBest ? "best" : ""}">
+        <span class="cc">${FLAGS[cc]} ${CC_LABEL[cc]}${t.missing.length ? `<span class="miss">manjka: ${t.missing.join(", ")}</span>` : ""}</span>
+        <span class="sum">${money(t.sum, "EUR")}</span>
+      </div>`;
+    }).join("");
+
+    const note = bestCc
+      ? `<p style="font-size:12.5px;color:var(--text-muted);margin:10px 0 0;">Vse skupaj je najceneje kupiti v <b>${CC_LABEL[bestCc]}</b>.</p>`
+      : `<p style="font-size:12.5px;color:var(--bad);margin:10px 0 0;">Noben trg nima čisto vseh izdelkov iz košarice - primerjaj delne vsote zgoraj.</p>`;
+
+    cartBody.innerHTML = `
+      ${itemsHtml}
+      <div class="cart-totals-title">Skupaj po državah</div>
+      <div class="cart-totals">${totalsHtml}</div>
+      ${note}
+      <button class="cart-clear" id="cartClearBtn">Počisti košarico</button>
+    `;
+
+    cartBody.querySelectorAll("[data-qty-plus]").forEach(b => b.onclick = () => setQty(b.dataset.qtyPlus, (cart[b.dataset.qtyPlus] || 0) + 1));
+    cartBody.querySelectorAll("[data-qty-minus]").forEach(b => b.onclick = () => setQty(b.dataset.qtyMinus, (cart[b.dataset.qtyMinus] || 0) - 1));
+    cartBody.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => removeFromCart(b.dataset.remove));
+    const clearBtn = el("#cartClearBtn");
+    if(clearBtn) clearBtn.onclick = () => { cart = {}; saveCart(); updateCartBadge(); renderCart(); };
+  }
+
+  cartFab.onclick = () => { renderCart(); cartOverlay.hidden = false; };
+  cartClose.onclick = () => { cartOverlay.hidden = true; };
+  cartOverlay.onclick = (e) => { if(e.target === cartOverlay) cartOverlay.hidden = true; };
+
+  productGrid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".add-cart-btn");
+    if(!btn) return;
+    e.preventDefault();
+    addToCart(btn.dataset.add);
+    btn.classList.add("added");
+    setTimeout(() => btn.classList.remove("added"), 900);
+  });
+
+  updateCartBadge();
 
   // --- animacije: reveal-on-scroll za kartice + count-up za statistiko ---
   const revealObserver = ("IntersectionObserver" in window) ? new IntersectionObserver((entries) => {
@@ -525,6 +742,9 @@
       <div class="p-card reveal">
         <div class="thumb">${p.image ? `<img src="${p.image}?f=s" loading="lazy" alt="${p.name||''}">` : ""}</div>
         <div class="body">
+          <button class="add-cart-btn" data-add="${p.itemNo}" aria-label="Dodaj v košarico" title="Dodaj v košarico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
           <div class="name">${p.name || ""}</div>
           <div class="type">${p.typeName || ""}${p.validDesign ? ", " + p.validDesign : ""}</div>
           <div class="measure">${p.measure || ""}</div>
